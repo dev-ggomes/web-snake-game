@@ -17,7 +17,7 @@ function getCSSVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-// Função para desenhar o retângulo arredondado
+// Função para desenhar o retângulo arredondado com cantos específicos
 function drawRoundedRect(x, y, width, height, radius, fillStyle, corners) {
   ctx.fillStyle = fillStyle;
   ctx.beginPath();
@@ -42,6 +42,40 @@ function drawRoundedRect(x, y, width, height, radius, fillStyle, corners) {
   ctx.fill();
 }
 
+// Função para desenhar os olhos da cobra
+function drawEyes(x, y, direction) {
+  const eyeOffset = 4; // Distância dos olhos da borda da cabeça
+  const eyeSize = 3; // Tamanho dos olhos
+  ctx.fillStyle = "white"; // Cor dos olhos
+
+  // Olhos da cobra dependendo da direção
+  if (direction === "UP") {
+    ctx.beginPath();
+    ctx.arc(x - eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2); // olho esquerdo
+    ctx.arc(x + eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2); // olho direito
+    ctx.fill();
+    ctx.closePath();
+  } else if (direction === "DOWN") {
+    ctx.beginPath();
+    ctx.arc(x - eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2); // olho esquerdo
+    ctx.arc(x + eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2); // olho direito
+    ctx.fill();
+    ctx.closePath();
+  } else if (direction === "LEFT") {
+    ctx.beginPath();
+    ctx.arc(x + eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2); // olho direito
+    ctx.arc(x + eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2); // olho esquerdo
+    ctx.fill();
+    ctx.closePath();
+  } else if (direction === "RIGHT") {
+    ctx.beginPath();
+    ctx.arc(x - eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2); // olho esquerdo
+    ctx.arc(x - eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2); // olho direito
+    ctx.fill();
+    ctx.closePath();
+  }
+}
+
 document.addEventListener("keydown", changeDirection);
 
 function changeDirection(e) {
@@ -54,12 +88,39 @@ function changeDirection(e) {
 }
 
 function draw() {
+  // Verifica colisão com a parede **antes** de mover a cobra
+  let head = { ...snake[0] };
+
+  if (
+    head.x < 0 || head.x >= canvas.width ||
+    head.y < 0 || head.y >= canvas.height
+  ) {
+    clearInterval(game);
+    alert("💀 Game Over!");
+    return; // Saímos da função draw para evitar mais atualizações após a colisão
+  }
+
+  // Mover a cobra depois de verificar colisão
+  if (direction === "LEFT") head.x -= box;
+  if (direction === "RIGHT") head.x += box;
+  if (direction === "UP") head.y -= box;
+  if (direction === "DOWN") head.y += box;
+
+  // Verificação de colisão com o corpo
+  for (let i = 1; i < snake.length; i++) {
+    if (head.x === snake[i].x && head.y === snake[i].y) {
+      clearInterval(game);
+      alert("💀 Game Over!");
+      return; // Saímos da função draw para evitar mais atualizações após a colisão
+    }
+  }
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // desenha a cobra
   for (let i = 0; i < snake.length; i++) {
     if (i === 0) {
-      // cabeça arredondada com base na direção
+      // Cabeça arredondada com base na direção
       let corners = { tl: false, tr: false, br: false, bl: false };
 
       switch (direction) {
@@ -90,8 +151,11 @@ function draw() {
         getCSSVar("--cobra-cabeca"),
         corners // passa a direção para arredondar os cantos corretos
       );
+
+      // Desenho dos olhos na cabeça
+      drawEyes(snake[i].x + box / 2, snake[i].y + box / 2, direction);
     } else {
-      // corpo normal
+      // Corpo normal
       ctx.fillStyle = getCSSVar("--cobra-corpo");
       ctx.fillRect(snake[i].x, snake[i].y, box, box);
     }
@@ -109,30 +173,6 @@ function draw() {
   );
   ctx.fill();
   ctx.closePath();
-
-  // movimento
-  let head = { ...snake[0] };
-  if (direction === "LEFT") head.x -= box;
-  if (direction === "RIGHT") head.x += box;
-  if (direction === "UP") head.y -= box;
-  if (direction === "DOWN") head.y += box;
-
-  // colisão com parede
-  if (
-    head.x < 0 || head.x >= canvas.width ||
-    head.y < 0 || head.y >= canvas.height
-  ) {
-    clearInterval(game);
-    alert("💀 Game Over!");
-  }
-
-  // colisão com corpo
-  for (let i = 1; i < snake.length; i++) {
-    if (head.x === snake[i].x && head.y === snake[i].y) {
-      clearInterval(game);
-      alert("💀 Game Over!");
-    }
-  }
 
   // comer comida
   if (head.x === food.x && head.y === food.y) {
