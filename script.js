@@ -41,7 +41,16 @@ function draw() {
 
   // desenha comida
   ctx.fillStyle = getCSSVar("--roxo-comida");
-  ctx.fillRect(food.x, food.y, box, box);
+  ctx.beginPath();
+  ctx.arc(
+    food.x + box / 2, // centro x
+    food.y + box / 2, // centro y
+    box / 2 - 2,      // raio (ligeiramente menor que o box)
+    0,
+    Math.PI * 2
+  );
+  ctx.fill();
+  ctx.closePath();
 
   // movimento
   let head = { ...snake[0] };
