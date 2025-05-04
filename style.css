@@ -1,0 +1,35 @@
+.logo-png{
+    position: fixed;
+    top: 50px;
+    left: 50px;
+    z-index: 1000;
+}
+
+.logo-png img{
+    width: 80px;
+    height: 80px;
+}
+
+.water-mark {
+    display: flex;
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+    gap: .5rem;
+}
+
+.water-mark strong{
+    color: #a259ff;
+}
+
+.water-mark img{
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+    margin-bottom: -0.2rem;
+}
