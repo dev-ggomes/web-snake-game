@@ -164,18 +164,31 @@ function startPauseGame() {
 
 // Função para reiniciar o jogo
 function resetGame() {
-  clearInterval(gameInterval);
-  snake = [{ x: 9 * box, y: 9 * box }];
-  direction = "RIGHT";
-  food = {
-    x: Math.floor(Math.random() * cols) * box,
-    y: Math.floor(Math.random() * rows) * box
-  };
-  score = 0;
-  document.getElementById("score").innerText = "Pontuação: 0";
-  document.getElementById("startPauseButton").innerText = "Iniciar Jogo";
-  gameRunning = false;
-}
+    // Limpar o intervalo do jogo atual, se houver
+    clearInterval(gameInterval);
+  
+    // Resetar a cobra, comida e pontuação
+    snake = [{ x: 9 * box, y: 9 * box }];
+    direction = "RIGHT";
+    food = {
+      x: Math.floor(Math.random() * cols) * box,
+      y: Math.floor(Math.random() * rows) * box
+    };
+    score = 0;
+  
+    // Atualizar a pontuação na tela
+    document.getElementById("score").innerText = "Pontuação: 0";
+  
+    // Alterar o texto do botão para "Iniciar Jogo"
+    document.getElementById("startPauseButton").innerText = "Iniciar Jogo";
+  
+    // Garantir que o jogo esteja parado
+    gameRunning = false;
+  
+    // Limpar o canvas para o novo jogo
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  
 
 // Adicionando eventos aos botões
 document.getElementById("startPauseButton").addEventListener("click", startPauseGame);
