@@ -11,6 +11,8 @@ let food = {
   y: Math.floor(Math.random() * rows) * box
 };
 let score = 0;
+let gameInterval;
+let gameRunning = false;
 
 // Função para obter valores CSS definidos como variáveis
 function getCSSVar(name) {
@@ -44,33 +46,32 @@ function drawRoundedRect(x, y, width, height, radius, fillStyle, corners) {
 
 // Função para desenhar os olhos da cobra
 function drawEyes(x, y, direction) {
-  const eyeOffset = 4; // Distância dos olhos da borda da cabeça
-  const eyeSize = 3; // Tamanho dos olhos
-  ctx.fillStyle = "white"; // Cor dos olhos
+  const eyeOffset = 4;
+  const eyeSize = 3;
+  ctx.fillStyle = "white";
 
-  // Olhos da cobra dependendo da direção
   if (direction === "UP") {
     ctx.beginPath();
-    ctx.arc(x - eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2); // olho esquerdo
-    ctx.arc(x + eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2); // olho direito
+    ctx.arc(x - eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2);
+    ctx.arc(x + eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2);
     ctx.fill();
     ctx.closePath();
   } else if (direction === "DOWN") {
     ctx.beginPath();
-    ctx.arc(x - eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2); // olho esquerdo
-    ctx.arc(x + eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2); // olho direito
+    ctx.arc(x - eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2);
+    ctx.arc(x + eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2);
     ctx.fill();
     ctx.closePath();
   } else if (direction === "LEFT") {
     ctx.beginPath();
-    ctx.arc(x + eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2); // olho direito
-    ctx.arc(x + eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2); // olho esquerdo
+    ctx.arc(x + eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2);
+    ctx.arc(x + eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2);
     ctx.fill();
     ctx.closePath();
   } else if (direction === "RIGHT") {
     ctx.beginPath();
-    ctx.arc(x - eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2); // olho esquerdo
-    ctx.arc(x - eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2); // olho direito
+    ctx.arc(x - eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2);
+    ctx.arc(x - eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2);
     ctx.fill();
     ctx.closePath();
   }
@@ -80,7 +81,6 @@ document.addEventListener("keydown", changeDirection);
 
 function changeDirection(e) {
   const key = e.key;
-
   if ((key === "ArrowLeft" || key === "a") && direction !== "RIGHT") direction = "LEFT";
   else if ((key === "ArrowUp" || key === "w") && direction !== "DOWN") direction = "UP";
   else if ((key === "ArrowRight" || key === "d") && direction !== "LEFT") direction = "RIGHT";
@@ -88,93 +88,54 @@ function changeDirection(e) {
 }
 
 function draw() {
-  // Verifica colisão com a parede **antes** de mover a cobra
   let head = { ...snake[0] };
 
-  if (
-    head.x < 0 || head.x >= canvas.width ||
-    head.y < 0 || head.y >= canvas.height
-  ) {
-    clearInterval(game);
+  if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
+    clearInterval(gameInterval);
     alert("💀 Game Over!");
-    return; // Saímos da função draw para evitar mais atualizações após a colisão
+    return;
   }
 
-  // Mover a cobra depois de verificar colisão
   if (direction === "LEFT") head.x -= box;
   if (direction === "RIGHT") head.x += box;
   if (direction === "UP") head.y -= box;
   if (direction === "DOWN") head.y += box;
 
-  // Verificação de colisão com o corpo
   for (let i = 1; i < snake.length; i++) {
     if (head.x === snake[i].x && head.y === snake[i].y) {
-      clearInterval(game);
+      clearInterval(gameInterval);
       alert("💀 Game Over!");
-      return; // Saímos da função draw para evitar mais atualizações após a colisão
+      return;
     }
   }
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // desenha a cobra
   for (let i = 0; i < snake.length; i++) {
     if (i === 0) {
-      // Cabeça arredondada com base na direção
       let corners = { tl: false, tr: false, br: false, bl: false };
 
       switch (direction) {
-        case "UP":
-          corners.tl = true;
-          corners.tr = true;
-          break;
-        case "DOWN":
-          corners.bl = true;
-          corners.br = true;
-          break;
-        case "LEFT":
-          corners.tl = true;
-          corners.bl = true;
-          break;
-        case "RIGHT":
-          corners.tr = true;
-          corners.br = true;
-          break;
+        case "UP": corners.tl = true; corners.tr = true; break;
+        case "DOWN": corners.bl = true; corners.br = true; break;
+        case "LEFT": corners.tl = true; corners.bl = true; break;
+        case "RIGHT": corners.tr = true; corners.br = true; break;
       }
 
-      drawRoundedRect(
-        snake[i].x,
-        snake[i].y,
-        box,
-        box,
-        6, // raio de arredondamento
-        getCSSVar("--cobra-cabeca"),
-        corners // passa a direção para arredondar os cantos corretos
-      );
-
-      // Desenho dos olhos na cabeça
+      drawRoundedRect(snake[i].x, snake[i].y, box, box, 6, getCSSVar("--cobra-cabeca"), corners);
       drawEyes(snake[i].x + box / 2, snake[i].y + box / 2, direction);
     } else {
-      // Corpo normal
       ctx.fillStyle = getCSSVar("--cobra-corpo");
       ctx.fillRect(snake[i].x, snake[i].y, box, box);
     }
   }
 
-  // desenha comida
   ctx.fillStyle = getCSSVar("--roxo-comida");
   ctx.beginPath();
-  ctx.arc(
-    food.x + box / 2, // centro x
-    food.y + box / 2, // centro y
-    box / 2 - 2,      // raio (ligeiramente menor que o box)
-    0,
-    Math.PI * 2
-  );
+  ctx.arc(food.x + box / 2, food.y + box / 2, box / 2 - 2, 0, Math.PI * 2);
   ctx.fill();
   ctx.closePath();
 
-  // comer comida
   if (head.x === food.x && head.y === food.y) {
     score++;
     document.getElementById("score").innerText = "Pontuação: " + score;
@@ -183,10 +144,39 @@ function draw() {
       y: Math.floor(Math.random() * rows) * box
     };
   } else {
-    snake.pop(); // remove cauda se não comer
+    snake.pop();
   }
 
   snake.unshift(head);
 }
 
-const game = setInterval(draw, 100);
+// Função para iniciar o jogo ou pausar
+function startPauseGame() {
+  if (gameRunning) {
+    clearInterval(gameInterval);
+    document.getElementById("startPauseButton").innerText = "Iniciar Jogo";
+  } else {
+    gameInterval = setInterval(draw, 100);
+    document.getElementById("startPauseButton").innerText = "Pausar Jogo";
+  }
+  gameRunning = !gameRunning;
+}
+
+// Função para reiniciar o jogo
+function resetGame() {
+  clearInterval(gameInterval);
+  snake = [{ x: 9 * box, y: 9 * box }];
+  direction = "RIGHT";
+  food = {
+    x: Math.floor(Math.random() * cols) * box,
+    y: Math.floor(Math.random() * rows) * box
+  };
+  score = 0;
+  document.getElementById("score").innerText = "Pontuação: 0";
+  document.getElementById("startPauseButton").innerText = "Iniciar Jogo";
+  gameRunning = false;
+}
+
+// Adicionando eventos aos botões
+document.getElementById("startPauseButton").addEventListener("click", startPauseGame);
+document.getElementById("resetButton").addEventListener("click", resetGame);
