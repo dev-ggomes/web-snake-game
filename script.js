@@ -12,6 +12,11 @@ let food = {
 };
 let score = 0;
 
+// Função para obter valores CSS definidos como variáveis
+function getCSSVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
 document.addEventListener("keydown", changeDirection);
 
 function changeDirection(e) {
@@ -28,12 +33,14 @@ function draw() {
 
   // desenha a cobra
   for (let i = 0; i < snake.length; i++) {
-    ctx.fillStyle = i === 0 ? "#0f0" : "#0a0";
+    ctx.fillStyle = i === 0
+      ? getCSSVar("--roxo-cabeca")
+      : getCSSVar("--roxo-corpo");
     ctx.fillRect(snake[i].x, snake[i].y, box, box);
   }
 
   // desenha comida
-  ctx.fillStyle = "#f00";
+  ctx.fillStyle = getCSSVar("--roxo-comida");
   ctx.fillRect(food.x, food.y, box, box);
 
   // movimento
