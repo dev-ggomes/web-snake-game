@@ -1,3 +1,18 @@
+:root {
+    --cinza-fundo: #1a1a1a;
+    --cinza-tabuleiro: #2a2a2a;
+    --cinza-borda: #444;
+    --roxo-cabeca: #8a2be2;
+    --roxo-corpo: #6a0dad;
+    --roxo-comida: #9b30ff;
+    --cor-texto: #e0e0e0;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
 .logo-png{
     position: fixed;
     top: 50px;
@@ -36,8 +51,8 @@
 
 body {
     margin: 0;
-    background: #111;
-    color: #fff;
+    background: var(--cinza-fundo);
+    color: var(--cor-texto);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -47,8 +62,8 @@ body {
 }
   
 canvas {
-    background: #222;
-    border: 2px solid #555;
+    background: var(--cinza-tabuleiro);
+    border: 2px solid var(--cinza-borda);
 }
   
 #score {
