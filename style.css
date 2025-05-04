@@ -33,3 +33,27 @@
     opacity: 0.5;
     margin-bottom: -0.2rem;
 }
+
+body {
+    margin: 0;
+    background: #111;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: sans-serif;
+    user-select: none;
+}
+  
+canvas {
+    background: #222;
+    border: 2px solid #555;
+}
+  
+#score {
+    position: absolute;
+    top: 20px;
+    font-size: 24px;
+}
+  
