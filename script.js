@@ -34,8 +34,8 @@ function draw() {
   // desenha a cobra
   for (let i = 0; i < snake.length; i++) {
     ctx.fillStyle = i === 0
-      ? getCSSVar("--roxo-cabeca")
-      : getCSSVar("--roxo-corpo");
+      ? getCSSVar("--cobra-cabeca")
+      : getCSSVar("--cobra-corpo");
     ctx.fillRect(snake[i].x, snake[i].y, box, box);
   }
 
