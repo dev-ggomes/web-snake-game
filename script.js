@@ -17,6 +17,31 @@ function getCSSVar(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
+// Função para desenhar o retângulo arredondado
+function drawRoundedRect(x, y, width, height, radius, fillStyle, corners) {
+  ctx.fillStyle = fillStyle;
+  ctx.beginPath();
+  ctx.moveTo(x + (corners.tl ? radius : 0), y);
+  ctx.lineTo(x + width - (corners.tr ? radius : 0), y);
+  if (corners.tr) ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  else ctx.lineTo(x + width, y);
+
+  ctx.lineTo(x + width, y + height - (corners.br ? radius : 0));
+  if (corners.br) ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  else ctx.lineTo(x + width, y + height);
+
+  ctx.lineTo(x + (corners.bl ? radius : 0), y + height);
+  if (corners.bl) ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  else ctx.lineTo(x, y + height);
+
+  ctx.lineTo(x, y + (corners.tl ? radius : 0));
+  if (corners.tl) ctx.quadraticCurveTo(x, y, x + radius, y);
+  else ctx.lineTo(x, y);
+
+  ctx.closePath();
+  ctx.fill();
+}
+
 document.addEventListener("keydown", changeDirection);
 
 function changeDirection(e) {
@@ -33,10 +58,43 @@ function draw() {
 
   // desenha a cobra
   for (let i = 0; i < snake.length; i++) {
-    ctx.fillStyle = i === 0
-      ? getCSSVar("--cobra-cabeca")
-      : getCSSVar("--cobra-corpo");
-    ctx.fillRect(snake[i].x, snake[i].y, box, box);
+    if (i === 0) {
+      // cabeça arredondada com base na direção
+      let corners = { tl: false, tr: false, br: false, bl: false };
+
+      switch (direction) {
+        case "UP":
+          corners.tl = true;
+          corners.tr = true;
+          break;
+        case "DOWN":
+          corners.bl = true;
+          corners.br = true;
+          break;
+        case "LEFT":
+          corners.tl = true;
+          corners.bl = true;
+          break;
+        case "RIGHT":
+          corners.tr = true;
+          corners.br = true;
+          break;
+      }
+
+      drawRoundedRect(
+        snake[i].x,
+        snake[i].y,
+        box,
+        box,
+        6, // raio de arredondamento
+        getCSSVar("--cobra-cabeca"),
+        corners // passa a direção para arredondar os cantos corretos
+      );
+    } else {
+      // corpo normal
+      ctx.fillStyle = getCSSVar("--cobra-corpo");
+      ctx.fillRect(snake[i].x, snake[i].y, box, box);
+    }
   }
 
   // desenha comida
