@@ -160,11 +160,10 @@ function startPauseGame() {
   if (gameRunning) {
     clearInterval(gameInterval);
     document.getElementById("startPauseButton").innerText = "Iniciar Jogo";
+    gameRunning = false;
   } else {
-    gameInterval = setInterval(draw, 100);
-    document.getElementById("startPauseButton").innerText = "Pausar Jogo";
+    startCountdown();
   }
-  gameRunning = !gameRunning;
 }
 
 // Função para reiniciar o jogo
@@ -187,3 +186,27 @@ function resetGame() {
 // Adicionando eventos aos botões
 document.getElementById("startPauseButton").addEventListener("click", startPauseGame);
 document.getElementById("resetButton").addEventListener("click", resetGame);
+
+function startCountdown(){
+  const countdownEl = document.getElementById("countdown");
+  let count = 3;
+
+  countdownEl.style.display = "block";
+  countdownEl.innerText = count;
+
+  const countdownInterval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      countdownEl.innerText = count;
+      countdownEl.style.animation = "none";
+      coutndownEl.offsetHeight;
+      countdownEl.style.animation = "";
+    } else {
+      clearInterval(countdownInterval);
+      countdownEl.style.display = "none";
+      gameInterval = setInterval(draw, 100);
+      document.getElementById("startPauseButton").innerText = "Pausar Jogo";
+      gameRunning = true;
+    }
+  }, 1000);
+}
