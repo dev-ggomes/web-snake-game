@@ -6,6 +6,7 @@ const cols = canvas.width / box;
 
 let snake = [{ x: 9 * box, y: 9 * box }];
 let direction = "RIGHT";
+let directionQueue = []; // NOVO: fila de direções
 let food = {
   x: Math.floor(Math.random() * cols) * box,
   y: Math.floor(Math.random() * rows) * box
@@ -50,44 +51,48 @@ function drawEyes(x, y, direction) {
   const eyeSize = 3;
   ctx.fillStyle = "white";
 
+  ctx.beginPath();
   if (direction === "UP") {
-    ctx.beginPath();
     ctx.arc(x - eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2);
     ctx.arc(x + eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.closePath();
   } else if (direction === "DOWN") {
-    ctx.beginPath();
     ctx.arc(x - eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2);
     ctx.arc(x + eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.closePath();
   } else if (direction === "LEFT") {
-    ctx.beginPath();
     ctx.arc(x + eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2);
     ctx.arc(x + eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.closePath();
   } else if (direction === "RIGHT") {
-    ctx.beginPath();
     ctx.arc(x - eyeOffset, y + eyeOffset, eyeSize, 0, Math.PI * 2);
     ctx.arc(x - eyeOffset, y - eyeOffset, eyeSize, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.closePath();
   }
+  ctx.fill();
+  ctx.closePath();
 }
 
 document.addEventListener("keydown", changeDirection);
 
+// NOVO: processar a fila de direções
 function changeDirection(e) {
   const key = e.key;
-  if ((key === "ArrowLeft" || key === "a") && direction !== "RIGHT") direction = "LEFT";
-  else if ((key === "ArrowUp" || key === "w") && direction !== "DOWN") direction = "UP";
-  else if ((key === "ArrowRight" || key === "d") && direction !== "LEFT") direction = "RIGHT";
-  else if ((key === "ArrowDown" || key === "s") && direction !== "UP") direction = "DOWN";
+  const lastDirection = directionQueue.length > 0 ? directionQueue[directionQueue.length - 1] : direction;
+
+  if ((key === "ArrowLeft" || key === "a") && lastDirection !== "RIGHT") {
+    directionQueue.push("LEFT");
+  } else if ((key === "ArrowUp" || key === "w") && lastDirection !== "DOWN") {
+    directionQueue.push("UP");
+  } else if ((key === "ArrowRight" || key === "d") && lastDirection !== "LEFT") {
+    directionQueue.push("RIGHT");
+  } else if ((key === "ArrowDown" || key === "s") && lastDirection !== "UP") {
+    directionQueue.push("DOWN");
+  }
 }
 
 function draw() {
+  // Aplicar a próxima direção na fila, se existir
+  if (directionQueue.length > 0) {
+    direction = directionQueue.shift();
+  }
+
   let head = { ...snake[0] };
 
   if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
@@ -164,31 +169,20 @@ function startPauseGame() {
 
 // Função para reiniciar o jogo
 function resetGame() {
-    // Limpar o intervalo do jogo atual, se houver
-    clearInterval(gameInterval);
-  
-    // Resetar a cobra, comida e pontuação
-    snake = [{ x: 9 * box, y: 9 * box }];
-    direction = "RIGHT";
-    food = {
-      x: Math.floor(Math.random() * cols) * box,
-      y: Math.floor(Math.random() * rows) * box
-    };
-    score = 0;
-  
-    // Atualizar a pontuação na tela
-    document.getElementById("score").innerText = "Pontuação: 0";
-  
-    // Alterar o texto do botão para "Iniciar Jogo"
-    document.getElementById("startPauseButton").innerText = "Iniciar Jogo";
-  
-    // Garantir que o jogo esteja parado
-    gameRunning = false;
-  
-    // Limpar o canvas para o novo jogo
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
-  
+  clearInterval(gameInterval);
+  snake = [{ x: 9 * box, y: 9 * box }];
+  direction = "RIGHT";
+  directionQueue = []; // limpar a fila de direções
+  food = {
+    x: Math.floor(Math.random() * cols) * box,
+    y: Math.floor(Math.random() * rows) * box
+  };
+  score = 0;
+  document.getElementById("score").innerText = "Pontuação: 0";
+  document.getElementById("startPauseButton").innerText = "Iniciar Jogo";
+  gameRunning = false;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
 // Adicionando eventos aos botões
 document.getElementById("startPauseButton").addEventListener("click", startPauseGame);
