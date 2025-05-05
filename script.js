@@ -97,7 +97,7 @@ function draw() {
 
   if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
     clearInterval(gameInterval);
-    alert("💀 Game Over!");
+    mostrarGameOver();
     return;
   }
 
@@ -109,7 +109,7 @@ function draw() {
   for (let i = 1; i < snake.length; i++) {
     if (head.x === snake[i].x && head.y === snake[i].y) {
       clearInterval(gameInterval);
-      alert("💀 Game Over!");
+      mostrarGameOver();
       return;
     }
   }
@@ -181,6 +181,8 @@ function resetGame() {
   document.getElementById("startPauseButton").innerText = "Iniciar Jogo";
   gameRunning = false;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  document.getElementById("gameOverMessage").style.display = "none";
 }
 
 // Adicionando eventos aos botões
@@ -209,4 +211,12 @@ function startCountdown(){
       gameRunning = true;
     }
   }, 1000);
+}
+
+function mostrarGameOver() {
+  clearInterval(gameInterval);
+  gameRunning = false;
+  document.getElementById("startPauseButton").innerText = "Iniciar Jogo";
+  const gameOverEl = document.getElementById("gameOverMessage");
+  gameOverEl.style.display = "block";
 }
