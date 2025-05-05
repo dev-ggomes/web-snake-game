@@ -183,6 +183,8 @@ function resetGame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   document.getElementById("gameOverMessage").style.display = "none";
+
+  startCountdown();
 }
 
 // Adicionando eventos aos botões
@@ -201,7 +203,7 @@ function startCountdown(){
     if (count > 0) {
       countdownEl.innerText = count;
       countdownEl.style.animation = "none";
-      coutndownEl.offsetHeight;
+      countdownEl.offsetHeight;
       countdownEl.style.animation = "";
     } else {
       clearInterval(countdownInterval);
