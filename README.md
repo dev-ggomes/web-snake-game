@@ -1,8 +1,22 @@
-## 🐍 Snake Game
-
 <div align="center">
-  <p>A funny way to spend some time with one of the most classic games in the world!</p>
+  
+  ## 🐍 Snake Game
+  
 </div>
+
+<p align="center">
+  A funny way to spend some time with one of the most classic games in the world! <br>
+  ⭐ If you liked this project, please give it a star
+</p>
+
+<!-- |||||||||||||||||||| SPONSORS & STARS |||||||||||||||||||| -->
+<p align='center'>
+  <a href="https://github.com/sponsors/dev-ggomes"><img alt="Sponsor" src="https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#white" /></a>
+  &nbsp;
+  <a href="#"><img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/dev-ggomes/auto-refresh-any-site?style=for-the-badge" /></a>
+</p>
+
+<br>
 
 ---
 
