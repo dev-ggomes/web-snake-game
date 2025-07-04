@@ -6,7 +6,7 @@
 
 <p align="center">
   A funny way to spend some time with one of the most classic games in the world! <br>
-  ⭐ If you liked this project, please give it a star
+  ⭐ If you enjoy this project, please give it a star
 </p>
 
 <!-- |||||||||||||||||||| SPONSORS & STARS |||||||||||||||||||| -->
